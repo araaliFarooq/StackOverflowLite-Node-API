@@ -1,0 +1,4 @@
+DATABASE_URL=mongodb://localhost:27017/node-express-mongodb-server
+PORT = 8000
+GOOGLE_CLIENT_ID=randonm
+GOOGLE_CLIENT_SECRET=adadfaddad
