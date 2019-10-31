@@ -27,6 +27,7 @@ userRouter.post(
 );
 
 userRouter.get('/me', SecureRoute.loginRequired, UserController.getUserProfile);
+
 userRouter.get(
   '/google',
   UserValidations.validateAccessToken,

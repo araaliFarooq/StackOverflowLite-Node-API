@@ -6,5 +6,6 @@ Models => Database schemas
 */
 
 import UserService from './user-service';
+import QuestionService from './question-services';
 
-export default UserService;
+export { UserService, QuestionService };

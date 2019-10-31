@@ -1,4 +1,4 @@
-import UserService from '../../services';
+import { UserService } from '../../services';
 import {
   FacebookAuthentication,
   GoogleAuthentication,
@@ -143,8 +143,7 @@ export default class UserController {
     } catch (error) {
       return res.status(500).send({
         message: error.message || 'Couldnot complete registration',
-        success: false,
-        error: 'here'
+        success: false
       });
     }
   }

@@ -12,5 +12,12 @@ import JoiMiddleware from './JoiValidator';
 import UserMiddleware from './user-middleware';
 import SecureRoute from './SecureRoute';
 import UserValidations from './validations/user-validations';
+import questionValidator from './question-middleware';
 
-export { JoiMiddleware, UserMiddleware, SecureRoute, UserValidations };
+export {
+  JoiMiddleware,
+  UserMiddleware,
+  SecureRoute,
+  UserValidations,
+  questionValidator
+};
