@@ -11,4 +11,11 @@ questionRouter.post(
   QuestionController.postQuestion
 );
 
+questionRouter.put(
+  '/:id',
+  SecureRoute.loginRequired,
+  questionValidator.validateCreateQuestion,
+  QuestionController.updateQuestion
+);
+
 export default questionRouter;

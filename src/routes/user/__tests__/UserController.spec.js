@@ -13,7 +13,6 @@ describe('UserController', () => {
       }))
     };
   });
-  console.log(UserService);
   it('should return all users', async () => {
     jest.spyOn(UserService, 'findAllUsers').mockResolvedValue([]);
     await UserController.getAllUserRecords(req, res);

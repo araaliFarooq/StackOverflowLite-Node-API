@@ -21,4 +21,19 @@ export default class QuestionService {
     const newQuestion = await models.Question.create({ ...data });
     return newQuestion;
   }
+
+  /**
+   * @param  {object} data
+   * @param {string} id  id of question object to be updated
+   * @returns {Promise}
+   * @description updates a single question object
+   *@
+   */
+  static async updateQuestion(id, data) {
+    const updated = await models.Question.updateOne(
+      { _id: id },
+      { $set: { ...data } }
+    );
+    return updated;
+  }
 }
