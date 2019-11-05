@@ -1,4 +1,4 @@
-import { UserService } from '../../services';
+import { UserService } from "../../services";
 import {
   FacebookAuthentication,
   GoogleAuthentication,
@@ -8,7 +8,7 @@ import {
   decodeToken,
   verifyPassword,
   createToken
-} from '../../helpers';
+} from "../../helpers";
 
 export default class UserController {
   /**
@@ -86,7 +86,7 @@ export default class UserController {
     } catch (e) {
       return res.status(500).send({
         success: false,
-        message: e.message || 'Unable to authenticate user with facebook'
+        message: e.message || "Unable to authenticate user with facebook"
       });
     }
   }
@@ -101,7 +101,7 @@ export default class UserController {
     if (response.error) {
       return res.status(500).json({
         success: false,
-        message: response.error.message || 'Failed to get profile'
+        message: response.error.message || "Failed to get profile"
       });
     }
     const profile = FacebookAuthentication.serializeProfile(response);
@@ -109,25 +109,35 @@ export default class UserController {
       return res.status(500).send({
         success: false,
         message:
-          'This account doesnt have email associated with it,' +
-          'Please use a different account or sign up using google or an email '
+          "This account doesnt have email associated with it," +
+          "Please use a different account or sign up using google or an email "
       });
     }
     return profile;
   }
 
+  /**
+   * @param  {Request} req
+   * @param  {Response} res
+   * @returns user profile
+   * @throws error message if account not created successfully
+   */
   static async registerUser(req, res) {
     try {
       const {
         body: { username, email, confirmPassword, password }
       } = req;
-      let exception = '';
+      let exception = "";
       if (password !== confirmPassword) {
-        exception = 'Passwords do not match';
+        exception = "Passwords do not match";
         return res.status(400).send({ message: exception });
       }
-      const userByEmail = await UserService.findOneUser({ email });
-      const userByUsername = await UserService.findOneUser({ username });
+      const userByEmail = await UserService.findOneUser({
+        email
+      });
+      const userByUsername = await UserService.findOneUser({
+        username
+      });
       if (userByEmail || userByUsername) {
         exception = userByUsername
           ? `Username "${username}" is already in use`
@@ -136,32 +146,45 @@ export default class UserController {
       if (exception) {
         return res.status(409).send({ message: exception });
       }
-      const data = { ...req.body, password: await hashPassword(password) };
+      const data = {
+        ...req.body,
+        password: await hashPassword(password)
+      };
       const user = await UserService.createUser({ ...data });
       await sendUserEmailConfirmation(req, user);
-      return res.send({ user });
+      return res.send({
+        user,
+        message: `A confirmation email has been sent to "${user.email}" for verification`,
+        success: true
+      });
     } catch (error) {
       return res.status(500).send({
-        message: error.message || 'Couldnot complete registration',
+        message: error.message || "Couldnot complete registration",
         success: false
       });
     }
   }
 
+  /**
+   * @param  {Request} req
+   * @param  {Response} res
+   * @returns confirmation message
+   * @throws error message if account not created successfully
+   */
   static async confirmEmail(req, res) {
     try {
       const { id } = await decodeToken(req.params.token);
       const user = await UserService.findOneUser({ _id: id });
       if (!user) {
         return res.status(404).send({
-          message: 'User not Found',
+          message: "User not Found",
           success: false
         });
       }
       if (user.isVerified) {
         return res.status(400).send({
           success: false,
-          message: 'User is already verified'
+          message: "User is already verified"
         });
       }
       const { nModified } = await UserService.updateUser(id, {
@@ -171,25 +194,31 @@ export default class UserController {
       return res.status(nModified ? 200 : 500).send({
         success: nModified,
         message: nModified
-          ? 'User successfully verified'
-          : 'Verification not successfully'
+          ? "User successfully verified"
+          : "Verification not successfully"
       });
     } catch (e) {
       return res.status(500).send({
-        message: 'The link seems to have expired please try again',
+        message: "The link seems to have expired please try again",
         success: false
       });
     }
   }
 
+  /**
+   * @param  {Request} req
+   * @param  {Response} res
+   * @returns user auth token
+   * @throws error message if login wasn't successful
+   */
   static async loginUser(req, res) {
     const { username, password } = req.body;
     const user = await UserService.findOneUser({ username });
     if (!user) {
-      return res.status(404).send({ msg: 'User not found' });
+      return res.status(404).send({ msg: "User not found" });
     }
     const verified = await verifyPassword(user.password, password);
-    const message = !verified ? 'Invalid Password' : 'User not verified';
+    const message = !verified ? "Invalid Password" : "User not verified";
 
     if (!verified || !user.isVerified) {
       return res.status(400).send({
@@ -198,10 +227,13 @@ export default class UserController {
       });
     }
     const { _id: userId } = user;
-    const token = await createToken({ id: userId, email: user.email });
+    const token = await createToken({
+      id: userId,
+      email: user.email
+    });
     return res.send({
       success: true,
-      message: 'Login success',
+      message: "Login success",
       token,
       data: {
         username: user.username,
@@ -211,13 +243,19 @@ export default class UserController {
     });
   }
 
+  /**
+   * @param  {Request} req
+   * @param  {Response} res
+   * @returns a users profile
+   * @throws error message if user doesn't exist
+   */
   static async getUserProfile(req, res) {
     const { id } = req.user;
     const user = await UserService.findOneUser({ _id: id });
     if (!user) {
       return res.status(404).send({
         success: false,
-        message: 'User not found'
+        message: "User not found"
       });
     }
     const { email, username, _id: userId } = user;

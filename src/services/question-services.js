@@ -49,4 +49,14 @@ export default class QuestionService {
     const deleted = await models.Question.deleteOne({ _id: id });
     return deleted;
   }
+
+  /**
+   * @param {object}option
+   * @returns {Promise}
+   * @description returns all users or filtered using options param
+   */
+  static async findAllQuestions(options) {
+    const results = await models.Question.find(options);
+    return results;
+  }
 }

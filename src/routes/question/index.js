@@ -24,4 +24,6 @@ questionRouter.delete(
   QuestionController.deleteQuestion
 );
 
+questionRouter.get('', QuestionController.getAllQuestions);
+
 export default questionRouter;

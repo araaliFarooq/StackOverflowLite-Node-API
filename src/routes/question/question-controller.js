@@ -1,6 +1,23 @@
-import { QuestionService } from '../../services';
+import { QuestionService } from "../../services";
 
 export default class QuestionController {
+  /**
+   * @param  {Request} req
+   * @param  {Response} res
+   * @returns {Promise<Response>} with array of users
+   */
+  static async getAllQuestions(req, res) {
+    const response = await QuestionService.findAllQuestions({});
+    if (response.length > 0) {
+      return res.status(200).send({
+        data: response
+      });
+    }
+    return res.status(204).send({
+      message: "No questions posted yet"
+    });
+  }
+
   /**
    * @param  {Request} req
    * @param  {Response} res
@@ -16,10 +33,14 @@ export default class QuestionController {
       const question = await QuestionService.postQuestion({
         ...data
       });
-      return res.status(201).send({ question });
+      return res.status(201).send({
+        question,
+        message: "Question posted successfully",
+        success: true
+      });
     } catch (error) {
       return res.status(500).send({
-        message: error.message || 'Couldnot post question',
+        message: error.message || "Couldnot post question",
         success: false
       });
     }
@@ -40,7 +61,7 @@ export default class QuestionController {
       });
       if (!qstnById) {
         return res.status(400).send({
-          message: 'Question does not exist',
+          message: "Question does not exist",
           success: false
         });
       }
@@ -56,12 +77,12 @@ export default class QuestionController {
         return res.status(200).send({ updatedQuestion });
       }
       return res.status(401).send({
-        message: 'unauthorized to edit question',
+        message: "unauthorized to edit question",
         success: false
       });
     } catch (error) {
       return res.status(500).send({
-        message: error.message || 'Couldnot edit question',
+        message: error.message || "Couldnot edit question",
         success: false
       });
     }
@@ -75,7 +96,7 @@ export default class QuestionController {
     const {
       body: { title, qstnbody }
     } = req;
-    let exception = '';
+    let exception = "";
 
     const qstnBytitle = await QuestionService.findOneQuestion({
       title
@@ -86,7 +107,7 @@ export default class QuestionController {
     if (qstnBytitle || qstnBybody) {
       exception = qstnBytitle
         ? `Title "${title}" is already in use`
-        : 'This question already exists. Check out its answers';
+        : "This question already exists. Check out its answers";
     }
     return exception;
   }
@@ -106,7 +127,7 @@ export default class QuestionController {
       });
       if (!qstnById) {
         return res.status(400).send({
-          message: 'Question does not exist',
+          message: "Question does not exist",
           success: false
         });
       }
@@ -116,22 +137,22 @@ export default class QuestionController {
         });
         if (deletedResponse.deletedCount > 0) {
           return res.status(200).send({
-            message: 'Question deleted successfully',
+            message: "Question deleted successfully",
             success: true
           });
         }
         return res.status(400).send({
-          message: 'Couldnot delete question',
+          message: "Couldnot delete question",
           success: false
         });
       }
       return res.status(401).send({
-        message: 'unauthorized to edit question',
+        message: "unauthorized to edit question",
         success: false
       });
     } catch (error) {
       return res.status(500).send({
-        message: error.message || 'Couldnot delete question',
+        message: error.message || "Couldnot delete question",
         success: false
       });
     }
