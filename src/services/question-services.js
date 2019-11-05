@@ -18,7 +18,9 @@ export default class QuestionService {
    *
    */
   static async postQuestion(data) {
-    const newQuestion = await models.Question.create({ ...data });
+    const newQuestion = await models.Question.create({
+      ...data
+    });
     return newQuestion;
   }
 
@@ -35,5 +37,16 @@ export default class QuestionService {
       { $set: { ...data } }
     );
     return updated;
+  }
+
+  /**
+   * @param {string} id  id of question object to be deleted
+   * @returns {Promise}
+   * @description deletes a single question object
+   *@
+   */
+  static async deleteQuestion(id) {
+    const deleted = await models.Question.deleteOne({ _id: id });
+    return deleted;
   }
 }

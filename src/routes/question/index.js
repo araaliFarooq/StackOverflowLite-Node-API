@@ -18,4 +18,10 @@ questionRouter.put(
   QuestionController.updateQuestion
 );
 
+questionRouter.delete(
+  '/:id',
+  SecureRoute.loginRequired,
+  QuestionController.deleteQuestion
+);
+
 export default questionRouter;
